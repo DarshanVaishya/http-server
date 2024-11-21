@@ -26,14 +26,17 @@ public class Main {
 
 			// Read request URL
 			String line = reader.readLine();
+			System.out.println("Request received: " + line);
 			String[] HttpRequest = line.split(" ");
 
-			// If requested URL is the home then accept connection
 			if(HttpRequest[1].equals("/")) {
 				output.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
 				System.out.println("Accepted new connection");
+			} else if(HttpRequest[1].startsWith("/echo/")) {
+				String path = HttpRequest[1].split("/")[2];
+				String s = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + path.length() + "\r\n\r\n" + path;
+				output.write(s.getBytes());
 			}
-			// Otherwise reject the connection
 			else {
 				output.write("HTTP/1.1 404 Not Found\r\n\r\n".getBytes());
 				System.out.println("Rejected new connection");
