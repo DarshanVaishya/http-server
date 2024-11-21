@@ -32,13 +32,14 @@ public class Main {
 
 			if (HttpRequest[1].equals("/")) {
 				output.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
-				System.out.println("Accepted new connection");
+				System.out.println("Accepted connection at /");
 
 			} else if (HttpRequest[1].startsWith("/echo/")) {
-				String path = HttpRequest[1].split("/")[2];
-				String s = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + path.length()
-						+ "\r\n\r\n" + path;
+				String msg = HttpRequest[1].split("/")[2];
+				String s = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + msg.length()
+						+ "\r\n\r\n" + msg;
 				output.write(s.getBytes());
+				System.out.println("Accepted connection at /echo");
 
 			} else if (HttpRequest[1].startsWith("/user-agent")) {
 				String userAgent = reader.readLine();
@@ -49,10 +50,11 @@ public class Main {
 				String res = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + userAgent.length()
 						+ "\r\n\r\n" + userAgent;
 				output.write(res.getBytes());
+				System.out.println("Accepted connection at /user-agent");
 
 			} else {
 				output.write("HTTP/1.1 404 Not Found\r\n\r\n".getBytes());
-				System.out.println("Rejected new connection");
+				System.out.println("Rejected connection");
 			}
 
 			input.close();
