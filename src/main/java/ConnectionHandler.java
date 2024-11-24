@@ -51,16 +51,10 @@ public class ConnectionHandler extends Thread {
 				while(reader.ready()) {
 					sf.append((char) reader.read());
 				}
-				String body = sf.toString();
-
-				System.out.println("body read complete");
-				 System.out.println(body);
-				 Files.write(Path.of(directory + fileName), body.getBytes());
+				 Files.write(Path.of(directory + fileName), sf.toString().getBytes());
 				output.write("HTTP/1.1 201 Created\r\n\r\n".getBytes());
 
-			}
-
-			if (HttpRequest[1].equals("/")) {
+			} else if (HttpRequest[1].equals("/")) {
 				output.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
 				System.out.println("Accepted connection at /");
 
