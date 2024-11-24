@@ -1,38 +1,67 @@
-[![progress-banner](https://backend.codecrafters.io/progress/http-server/8b2ffbf2-c2e7-486e-bbfb-9aaf89f42dfa)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# HTTP Server
 
-This is a starting point for Java solutions to the
-["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
+## Table of contents
 
-[HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) is the
-protocol that powers the web. In this challenge, you'll build a HTTP/1.1 server
-that is capable of serving multiple clients.
+- [Overview](#overview)
+  - [Technologies used](#technologies-used)
+- [Challenges faced](#challenges-faced)
+- [Learning outcomes](#learning-outcomes)
+- [Screenshots](#screenshots)
+- [Directory structure](#directory-structure)
+- [Collaboration](#collaboration)
+- [Contact me](#contact-me)
 
-Along the way you'll learn about TCP servers,
-[HTTP request syntax](https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html),
-and more.
+## Overview
+This repositary has the code for a HTTP server written in Java. This does not require any dependencies written in Java using the ServerSocket and other classes in java.net package.
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+### Technologies used
+- Java
 
-# Passing the first stage
+## Challenges faced
 
-The entry point for your HTTP server implementation is in
-`src/main/java/Main.java`. Study and uncomment the relevant code, and push your
-changes to pass the first stage:
+## Learning outcomes
+- HTTP Protocol
+- TCP
+- File Handling in Java
 
-```sh
-git commit -am "pass 1st stage" # any msg
-git push origin master
+## Directory structure
+
+```
+.
+├── README.md
+├── codecrafters.yml
+├── pom.xml
+├── src
+│   └── main
+│       └── java
+│           ├── ConnectionHandler.java
+│           └── Main.java
+├── target
+│   ├── archive-tmp
+│   ├── classes
+│   │   ├── ConnectionHandler.class
+│   │   └── Main.class
+│   ├── codecrafters-http-server-1.0.jar
+│   ├── generated-sources
+│   │   └── annotations
+│   ├── maven-archiver
+│   │   └── pom.properties
+│   ├── maven-status
+│   │   └── maven-compiler-plugin
+│   │       └── compile
+│   │           └── default-compile
+│   │               ├── createdFiles.lst
+│   │               └── inputFiles.lst
+│   └── test-classes
+└── your_program.sh
+
+15 directories, 12 files
 ```
 
-Time to move on to the next stage!
+## Collaboration
 
-# Stage 2 & beyond
+If you have found a bug, suggesting an improvement or want to collaborate then please raise an [issue](https://github.com/DarshanVaishya/http-server/issues) or create an [pull request](https://github.com/DarshanVaishya/http-server/pulls).
 
-Note: This section is for stages 2 and beyond.
+## Contact me
 
-1. Ensure you have `mvn` installed locally
-1. Run `./your_program.sh` to run your program, which is implemented in
-   `src/main/java/Main.java`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+- [LinkedIn](https://www.linkedin.com/in/darshan-vaishya-ba99001a9/)
