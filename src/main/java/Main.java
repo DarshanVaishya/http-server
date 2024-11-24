@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class Main {
 	public static void main(String[] args) throws IOException {
@@ -14,8 +15,16 @@ public class Main {
 
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
-				ConnectionHandler tp = new ConnectionHandler(clientSocket);
-				tp.start();
+				if(args.length == 0) {
+					ConnectionHandler tp = new ConnectionHandler(clientSocket);
+					tp.start();
+				}
+				else {
+					System.out.println(Arrays.toString(args));
+					ConnectionHandler tp = new ConnectionHandler(clientSocket, args[1]);
+					tp.start();
+				}
+
 			}
 		} catch (IOException e) {
 			System.out.println("IOException: " + e.getMessage());
