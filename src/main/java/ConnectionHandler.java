@@ -1,15 +1,11 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Scanner;
 
 public class ConnectionHandler extends Thread {
 	public Socket clientSocket;
@@ -39,7 +35,6 @@ public class ConnectionHandler extends Thread {
 				return;
 			System.out.println("Request received: " + line);
 			String[] HttpRequest = line.split(" ");
-			System.out.println(Arrays.toString(HttpRequest));
 
 			if (HttpRequest[1].equals("/")) {
 				output.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
