@@ -16,15 +16,7 @@ public class Main {
 
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
-				if(args.length == 0) {
-					ConnectionHandler tp = new ConnectionHandler(clientSocket);
-					tp.start();
-				}
-				else {
-					ConnectionHandler tp = new ConnectionHandler(clientSocket, args[1]);
-					tp.start();
-				}
-
+				new ConnectionHandler(clientSocket, args.length > 0 ? args[1] : "").start();
 			}
 		} catch (IOException e) {
 			System.out.println("IOException: " + e.getMessage());

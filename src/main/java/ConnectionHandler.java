@@ -1,105 +1,62 @@
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
-public class ConnectionHandler extends Thread {
+class ConnectionHandler extends Thread {
 	public Socket clientSocket;
 	public String directory;
 
-	public ConnectionHandler(Socket clientSocket) {
-		this.clientSocket = clientSocket;
-	}
-
-	public ConnectionHandler(Socket clientSocket, String directory) {
+	public ConnectionHandler(Socket clientSocket,  String directory) {
 		this.clientSocket = clientSocket;
 		this.directory = directory;
 	}
-
+	
 	@Override
 	public void run() {
-		try {
-			// Get streams and reader from the new connection
-			InputStream input = clientSocket.getInputStream();
-			OutputStream output = clientSocket.getOutputStream();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+			try {
+				InputStream input = clientSocket.getInputStream();
+				OutputStream output = clientSocket.getOutputStream();
+				BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
-			// Read request URL
-			String line = reader.readLine();
-			if (line == null)
-				return;
-			System.out.println("Request received: " + line);
-			String[] HttpRequest = line.split(" ");
+				// Read request URL
+				String line = reader.readLine();
+				if (line == null)
+					return;
+				System.out.println();
+				System.out.println("Request received: " + line);
+				String[] requestLine = line.split(" ");
+				String requestMethod = requestLine[0];
+				String requestTarget = requestLine[1];
 
-			if (HttpRequest[0].equals("POST")) {
-				String fileName = HttpRequest[1].substring(7);
-				// Once there is an empty line then the file content starts 
-				while (reader.ready()) {
-					if (reader.readLine().equals(""))
-						break;
-				}
-
-				// Start reading the file content
-				StringBuffer sf = new StringBuffer();
-				while (reader.ready()) {
-					sf.append((char) reader.read());
-				}
-				Files.write(Path.of(directory + fileName), sf.toString().getBytes());
-				output.write("HTTP/1.1 201 Created\r\n\r\n".getBytes());
-				System.out.println("File " + directory + fileName + " created.");
-				System.out.println("File content: " + sf.toString());
-
-			} else if (HttpRequest[1].equals("/")) {
-				output.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
-				System.out.println("Accepted connection at /");
-
-			} else if (HttpRequest[1].startsWith("/echo/")) {
-				String msg = HttpRequest[1].split("/")[2];
-				String s = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + msg.length() + "\r\n\r\n"
-						+ msg;
-				output.write(s.getBytes());
-				System.out.println("Echoed message " + msg);
-
-			} else if (HttpRequest[1].startsWith("/user-agent")) {
-				String userAgent = reader.readLine();
-				while (!userAgent.startsWith("User-Agent")) {
-					userAgent = reader.readLine();
-				}
-
-				userAgent = userAgent.split(" ")[1];
-				String res = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + userAgent.length()
-						+ "\r\n\r\n" + userAgent;
-				output.write(res.getBytes());
-				System.out.println("User agent " + userAgent + " sent successfully.");
-			}
-
-			else if (HttpRequest[1].startsWith("/files")) {
-				// File name starts after /files/
-				String fileName = HttpRequest[1].substring(7);
-				File file = new File(directory, fileName);
-				if (file.exists()) {
-					String fileContent = Files.readString(file.toPath());
-					String s = "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: "
-							+ fileContent.length() + "\r\n\r\n" + fileContent;
-					output.write(s.getBytes());
+				if(requestTarget.startsWith("/files")) {
+					FileHandler handler = new FileHandler(directory, requestTarget);
+					if(requestTarget.startsWith("/files") && requestMethod.equals("POST")) {
+						handler.HandlePost(directory, requestTarget, reader, output);
+					} else {
+						handler.HandleGet(output);
+					}
 				} else {
-					output.write("HTTP/1.1 404 Not Found\r\n\r\n".getBytes());
+					RequestHandler handler = new RequestHandler(output, reader);
+					if(requestTarget.equals("/")) {
+							handler.handleHome();
+					} else if(requestTarget.startsWith("/echo")) {
+						handler.handleEcho(requestTarget);
+					} else if(requestTarget.startsWith("/user-agent")) {
+						handler.handleUserAgent();
+					} else {
+						handler.handleUnknown();
+					}
 				}
 
-			} else {
-				output.write("HTTP/1.1 404 Not Found\r\n\r\n".getBytes());
-				System.out.println("Rejected connection");
-			}
+				input.close();
+				output.close();
+				reader.close();
 
-			input.close();
-			output.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 	}
 }
