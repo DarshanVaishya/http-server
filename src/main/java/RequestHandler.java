@@ -2,23 +2,41 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class RequestHandler extends Thread {
+public class RequestHandler {
 	OutputStream output;
 	BufferedReader reader;
+	String HTTP_200 = "HTTP/1.1 200 OK\r\n";
+	String userAgent;
 
-	public RequestHandler(OutputStream output, BufferedReader reader) {
+	public RequestHandler(OutputStream output, BufferedReader reader) throws IOException {
 		this.output = output;
 		this.reader = reader;
+
+		String line = reader.readLine();
+		while(reader.ready()) {
+			if(line.startsWith("Accept-Encoding")) {
+				String encoder = line.split(" ")[1];
+				if(encoder.toLowerCase().equals("gzip")) 
+					this.HTTP_200 = "HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\n";
+			}
+
+			if(line.startsWith("User-Agent"))
+				userAgent = line.split(" ")[1];
+
+			line = reader.readLine();
+		}
+
+		System.out.println("HTTP200: " + HTTP_200);
 	}
 
 	public void handleHome() throws IOException {
-		output.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
+		output.write((HTTP_200 + "\r\n").getBytes());
 		System.out.println("Accepted connection at /");
 	}
 
-	public void handleEcho(String requestedResource) throws IOException {
-		String msg = requestedResource.split("/")[2];
-		String s = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + msg.length() + "\r\n\r\n"
+	public void handleEcho(String requestTarget) throws IOException {
+		String msg = requestTarget.split("/")[2];
+		String s = HTTP_200 + "Content-Type: text/plain\r\nContent-Length: " + msg.length() + "\r\n\r\n"
 				+ msg;
 
 		output.write(s.getBytes());
@@ -26,13 +44,7 @@ public class RequestHandler extends Thread {
 	}
 
 	public void handleUserAgent() throws IOException {
-		String line = reader.readLine();
-		while (!line.startsWith("User-Agent")) {
-			line = reader.readLine();
-		}
-
-		String userAgent = line.split(" ")[1];
-		String res = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + userAgent.length()
+		String res = HTTP_200 + "Content-Type: text/plain\r\nContent-Length: " + userAgent.length()
 				+ "\r\n\r\n" + userAgent;
 		output.write(res.getBytes());
 		System.out.println("User agent " + userAgent + " sent successfully.");

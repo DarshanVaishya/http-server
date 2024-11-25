@@ -23,7 +23,6 @@ class FileHandler {
 			String s = "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: "
 					+ fileContent.length() + "\r\n\r\n" + fileContent;
 
-			// LOGS
 			output.write(s.getBytes());
 			System.out.println("File " + directory + fileName + " read.");
 			System.out.println("File content: " + fileContent);
@@ -51,7 +50,6 @@ class FileHandler {
 		// Write content to the file from the request
 		Files.write(Path.of(directory + fileName), sf.toString().getBytes());
 
-		// LOGS
 		output.write("HTTP/1.1 201 Created\r\n\r\n".getBytes());
 		System.out.println("File " + directory + fileName + " created.");
 		System.out.println("File content: " + sf.toString());

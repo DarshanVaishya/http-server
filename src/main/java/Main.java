@@ -13,10 +13,11 @@ public class Main {
 		try {
 			// Allow reuse of address to prevent port in use error
 			serverSocket.setReuseAddress(true);
+			String directory = args.length > 0 ? args[1] : "";
 
 			while (true) {
 				Socket clientSocket = serverSocket.accept();
-				new ConnectionHandler(clientSocket, args.length > 0 ? args[1] : "").start();
+				new ConnectionHandler(clientSocket, directory).start();
 			}
 		} catch (IOException e) {
 			System.out.println("IOException: " + e.getMessage());
