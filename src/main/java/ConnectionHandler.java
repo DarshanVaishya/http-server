@@ -1,17 +1,12 @@
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 
 public class ConnectionHandler extends Thread {
 	public Socket clientSocket;
@@ -43,16 +38,21 @@ public class ConnectionHandler extends Thread {
 
 			if (HttpRequest[0].equals("POST")) {
 				String fileName = HttpRequest[1].substring(7);
-				while(reader.ready()) {
-					if(reader.readLine().equals("")) break;
+				// Once there is an empty line then the file content starts 
+				while (reader.ready()) {
+					if (reader.readLine().equals(""))
+						break;
 				}
 
+				// Start reading the file content
 				StringBuffer sf = new StringBuffer();
-				while(reader.ready()) {
+				while (reader.ready()) {
 					sf.append((char) reader.read());
 				}
-				 Files.write(Path.of(directory + fileName), sf.toString().getBytes());
+				Files.write(Path.of(directory + fileName), sf.toString().getBytes());
 				output.write("HTTP/1.1 201 Created\r\n\r\n".getBytes());
+				System.out.println("File " + directory + fileName + " created.");
+				System.out.println("File content: " + sf.toString());
 
 			} else if (HttpRequest[1].equals("/")) {
 				output.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
@@ -63,7 +63,7 @@ public class ConnectionHandler extends Thread {
 				String s = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + msg.length() + "\r\n\r\n"
 						+ msg;
 				output.write(s.getBytes());
-				System.out.println("Accepted connection at /echo");
+				System.out.println("Echoed message " + msg);
 
 			} else if (HttpRequest[1].startsWith("/user-agent")) {
 				String userAgent = reader.readLine();
@@ -75,7 +75,7 @@ public class ConnectionHandler extends Thread {
 				String res = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: " + userAgent.length()
 						+ "\r\n\r\n" + userAgent;
 				output.write(res.getBytes());
-				System.out.println("Accepted connection at /user-agent");
+				System.out.println("User agent " + userAgent + " sent successfully.");
 			}
 
 			else if (HttpRequest[1].startsWith("/files")) {
