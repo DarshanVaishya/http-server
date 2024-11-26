@@ -56,18 +56,14 @@ public class RequestHandler {
 		if (toCompress) {
 			byte[] compressedMsg = compressMessage(msg.getBytes());
 			String s = HTTP_200 + "Content-Type: text/plain\r\n" + "Content-Length: " + compressedMsg.length + "\r\n\r\n";
-			byte[] response = new byte[s.getBytes().length + compressedMsg.length];
-			System.arraycopy(s.getBytes(), 0, response, 0, s.getBytes().length);
-			System.arraycopy(compressedMsg, 0, response, s.getBytes().length, compressedMsg.length);
-			output.write(response);
-
+			output.write(s.getBytes());
+			output.write(compressedMsg);
 		} else {
 			String s = HTTP_200 + "Content-Type: text/plain\r\nContent-Length: " + msg.length() + "\r\n\r\n"
 					+ msg;
 			output.write(s.getBytes());
-			System.out.println("Echoed message " + msg);
-
 		}
+		System.out.println("Accepted connection at /echo");
 	}
 
 	public void handleUserAgent() throws IOException {
