@@ -74,28 +74,7 @@ public byte[] compressMessage(byte[] msg) throws IOException {
 │           ├── FileHandler.java
 │           ├── Main.java
 │           └── RequestHandler.java
-├── target
-│   ├── archive-tmp
-│   ├── classes
-│   │   ├── ConnectionHandler.class
-│   │   ├── FileHandler.class
-│   │   ├── Main.class
-│   │   └── RequestHandler.class
-│   ├── codecrafters-http-server-1.0.jar
-│   ├── generated-sources
-│   │   └── annotations
-│   ├── maven-archiver
-│   │   └── pom.properties
-│   ├── maven-status
-│   │   └── maven-compiler-plugin
-│   │       └── compile
-│   │           └── default-compile
-│   │               ├── createdFiles.lst
-│   │               └── inputFiles.lst
-│   └── test-classes
 └── your_program.sh
-
-15 directories, 16 files
 ```
 
 ## Collaboration
