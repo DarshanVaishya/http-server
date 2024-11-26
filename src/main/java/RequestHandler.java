@@ -6,27 +6,29 @@ public class RequestHandler {
 	OutputStream output;
 	BufferedReader reader;
 	String HTTP_200 = "HTTP/1.1 200 OK\r\n";
-	String userAgent;
+	String userAgent = "";
 
 	public RequestHandler(OutputStream output, BufferedReader reader) throws IOException {
 		this.output = output;
 		this.reader = reader;
 
+		// Check if request has requested HTTP Compression
+		// Only gzip is accepted for this server
 		String line = reader.readLine();
-		while(reader.ready()) {
-			if(line.startsWith("Accept-Encoding")) {
-				String encoder = line.split(" ")[1];
-				if(encoder.toLowerCase().equals("gzip")) 
-					this.HTTP_200 = "HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\n";
+		while (reader.ready()) {
+			if (line.startsWith("Accept-Encoding")) {
+				for (String encoder : line.split(" ")) {
+					if (encoder.toLowerCase().startsWith("gzip")) {
+						this.HTTP_200 = "HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\n";
+					}
+				}
 			}
 
-			if(line.startsWith("User-Agent"))
+			if (line.startsWith("User-Agent"))
 				userAgent = line.split(" ")[1];
 
 			line = reader.readLine();
 		}
-
-		System.out.println("HTTP200: " + HTTP_200);
 	}
 
 	public void handleHome() throws IOException {

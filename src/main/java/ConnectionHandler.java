@@ -33,11 +33,12 @@ class ConnectionHandler extends Thread {
 
 				if(requestTarget.startsWith("/files")) {
 					FileHandler handler = new FileHandler(directory, requestTarget);
-					if(requestTarget.startsWith("/files") && requestMethod.equals("POST")) {
-						handler.HandlePost(directory, requestTarget, reader, output);
+					if(requestMethod.equals("POST")) {
+						handler.HandlePost(directory, reader, output);
 					} else {
 						handler.HandleGet(output);
 					}
+
 				} else {
 					RequestHandler handler = new RequestHandler(output, reader);
 					if(requestTarget.equals("/")) {

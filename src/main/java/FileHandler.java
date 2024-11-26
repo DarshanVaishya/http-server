@@ -8,22 +8,22 @@ import java.nio.file.Path;
 class FileHandler {
 	String directory;
 	String requestTarget;
+	String fileName;
 
 	public FileHandler(String directory, String requestTarget) {
 		this.directory = directory;
 		this.requestTarget = requestTarget;
+		this.fileName = requestTarget.substring(7);
 	}
 
 	public void HandleGet(OutputStream output) throws IOException {
-		// File name starts after /files/
-		String fileName = requestTarget.substring(7);
 		File file = new File(directory, fileName);
 		if (file.exists()) {
 			String fileContent = Files.readString(file.toPath());
-			String s = "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: "
+			String resMsg = "HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: "
 					+ fileContent.length() + "\r\n\r\n" + fileContent;
 
-			output.write(s.getBytes());
+			output.write(resMsg.getBytes());
 			System.out.println("File " + directory + fileName + " read.");
 			System.out.println("File content: " + fileContent);
 		} else {
@@ -31,10 +31,8 @@ class FileHandler {
 		}
 	}
 
-	public void HandlePost(String directory, String requestTarget, BufferedReader reader, OutputStream output)
+	public void HandlePost(String directory, BufferedReader reader, OutputStream output)
 			throws IOException {
-		String fileName = requestTarget.substring(7);
-
 		// Once there is an empty line then the file content starts
 		while (reader.ready()) {
 			if (reader.readLine().equals(""))
