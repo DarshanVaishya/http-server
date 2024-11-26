@@ -1,11 +1,15 @@
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.zip.GZIPOutputStream;
 
 public class RequestHandler {
 	OutputStream output;
 	BufferedReader reader;
 	String HTTP_200 = "HTTP/1.1 200 OK\r\n";
+	boolean toCompress = false;
 	String userAgent = "";
 
 	public RequestHandler(OutputStream output, BufferedReader reader) throws IOException {
@@ -20,6 +24,7 @@ public class RequestHandler {
 				for (String encoder : line.split(" ")) {
 					if (encoder.toLowerCase().startsWith("gzip")) {
 						this.HTTP_200 = "HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\n";
+						toCompress = true;
 					}
 				}
 			}
@@ -31,6 +36,16 @@ public class RequestHandler {
 		}
 	}
 
+	public byte[] compressMessage(byte[] msg) throws IOException {
+		ByteArrayOutputStream byteStream = new ByteArrayOutputStream(msg.length);
+		GZIPOutputStream zipStream = new GZIPOutputStream(byteStream);
+		zipStream.write(msg);
+
+		zipStream.finish();
+
+		return byteStream.toByteArray();
+	}
+
 	public void handleHome() throws IOException {
 		output.write((HTTP_200 + "\r\n").getBytes());
 		System.out.println("Accepted connection at /");
@@ -38,11 +53,22 @@ public class RequestHandler {
 
 	public void handleEcho(String requestTarget) throws IOException {
 		String msg = requestTarget.split("/")[2];
-		String s = HTTP_200 + "Content-Type: text/plain\r\nContent-Length: " + msg.length() + "\r\n\r\n"
-				+ msg;
 
-		output.write(s.getBytes());
-		System.out.println("Echoed message " + msg);
+		if (toCompress) {
+			byte[] compressedMsg = compressMessage(msg.getBytes());
+			String s = HTTP_200 + "Content-Type: text/plain\r\n" + "Content-Length: " + compressedMsg.length + "\r\n\r\n";
+			byte[] response = new byte[s.getBytes().length + compressedMsg.length];
+			System.arraycopy(s.getBytes(), 0, response, 0, s.getBytes().length);
+			System.arraycopy(compressedMsg, 0, response, s.getBytes().length, compressedMsg.length);
+			output.write(response);
+
+		} else {
+			String s = HTTP_200 + "Content-Type: text/plain\r\nContent-Length: " + msg.length() + "\r\n\r\n"
+					+ msg;
+			output.write(s.getBytes());
+			System.out.println("Echoed message " + msg);
+
+		}
 	}
 
 	public void handleUserAgent() throws IOException {
