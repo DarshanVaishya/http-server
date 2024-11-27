@@ -3,6 +3,8 @@
 ## Table of contents
 
 - [Overview](#overview)
+  - [How to run](#how-to-run)
+  - [Functionality implemented](#functionality-implemented)
   - [Technologies used](#technologies-used)
 - [Challenges faced](#challenges-faced)
 - [Learning outcomes](#learning-outcomes)
@@ -11,7 +13,65 @@
 - [Contact me](#contact-me)
 
 ## Overview
-This repositary has the code for a HTTP server written in Java. This does not require any dependencies written in Java using the ServerSocket and other classes in java.net package.
+This repository has the code for a HTTP server written in Java. This does not require any dependencies written in Java using the ServerSocket and other classes in java.net package.
+
+### How to run
+- The code can be run by compiling the Java files in `src/main/java`.
+```
+// Inside src/main/java folder
+javac *.java
+```
+- Once compiled run the command
+```
+java Main --directory /tmp/
+```
+- You can change the directory used for file based requests by changing the arguement sent while running the class file. For example to change it to Desktop use:
+```
+java Main --directory /Desktop/
+```
+
+### Functionality implemented
+#### 1. GET Home
+```
+curl -v http://localhost:4221
+```
+- Returns status code 200.
+
+#### 2. GET URL Path
+```
+curl -v http://localhost:4221/abcdefg
+```
+- Returns status code 200 or 404 based on its existene.
+
+#### 3. Echo a message
+```
+curl -v http://localhost:4221/echo/hello
+```
+- Returns status code 200 with the message in its body, with header that has the size of the echoed message.
+
+#### 4. Read and send back header (user-agent)
+```
+curl -v --header "User-Agent: foobar/1.2.3" http://localhost:4221/user-agent
+```
+- Returns status code 200 with the given user agent in its body.
+
+#### 5. Read a file on the server
+```
+curl -i http://localhost:4221/files/foo
+```
+- Returns with status code 200 and the contents of the specified file in its body if the file exists. Otherwise returns with status code 404 not found.
+
+#### 6. Write a file on the server
+```
+curl -v --data "12345" -H "Content-Type: application/octet-stream" http://localhost:4221/files/file_123
+```
+- This creates a file on the server named `file_123` with the content `12345`. The server returns status code 201 Created.
+
+#### 7. GZip compression
+```
+curl -v -H "Accept-Encoding: gzip" http://localhost:4221/echo/abc`
+```
+- This returns the echoed message `abc` but compressed using GZip.
 
 ### Technologies used
 - Java
